@@ -1,5 +1,6 @@
 using DAL;
 using Domain;
+using DTO.Public.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,7 @@ namespace webapi.Controllers
     public class EventController : ControllerBase
     {
         private readonly EventRegistrationDbContext _context;
+        private readonly EventMapper _mapper = new EventMapper(new RegistrationMapper());
         
         public EventController(EventRegistrationDbContext context)
         {
@@ -17,54 +19,48 @@ namespace webapi.Controllers
         }
 
         [HttpGet]   
-        public async Task<ActionResult<IEnumerable<Event>>> GetEvents()
+        public async Task<ActionResult<IEnumerable<DTO.Public.Event>>> GetEvents()
         {
-            return await _context.Events.Include(x => x.Registrations).ToListAsync();
+            var events = await _context.Events.Include(x => x.Registrations).ToListAsync();
+            var res = events.Select(x => _mapper.Map(x)).ToList();
+            return res;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Event>> GetEvent(Guid id)
+        public async Task<ActionResult<DTO.Public.Event>> GetEvent(Guid id)
         {
-            var evt = await _context.Events.FirstOrDefaultAsync(evt => evt.Id == id);
+            var evt = await _context.Events
+                .Include(x => x.Registrations)
+                .FirstOrDefaultAsync(evt => evt.Id == id);
             if (evt == null)
             {
                 return NoContent();
             }
 
-            return Ok(evt);
+            var res = _mapper.Map(evt);
+            return Ok(res);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEvent(Guid id, Event evt)
+        public async Task<IActionResult> PutEvent(Guid id, DTO.Public.Event evt)
         {
             if (id != evt.Id)
             {
                 return BadRequest();
             }
-
-            _context.Entry(evt).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                var eventExists = _context.Events.Any(e => e.Id == id);
-                if (!eventExists)
-                {
-                    return NotFound();
-                }
-                throw;
-            }
+            
+            var res = _mapper.Map(evt);
+            _context.Events.Update(res);
+            await _context.SaveChangesAsync();
             
             return NoContent();
         }
 
         [HttpPost]
-        public async Task<ActionResult<Event>> PostEvent(Event evt)
+        public async Task<ActionResult<DTO.Public.Event>> PostEvent(DTO.Public.Event evt)
         {
-            _context.Events.Add(evt);
+            var res = _mapper.Map(evt);
+            _context.Events.Add(res);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetEvent", new { id = evt.Id }, evt);

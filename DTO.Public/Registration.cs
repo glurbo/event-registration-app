@@ -1,12 +1,8 @@
-using Domain.Base;
+namespace DTO.Public;
 
-namespace Domain;
-
-public class Registration : DomainEntity
+public class Registration
 {
-    public Guid EventId { get; set; }
-    public Event? Event { get; set; }
-
+    public Guid Id { get; set; }
     public string FirstName { get; set; } = default!;
     public string LastName { get; set; } = default!;
     public string IdentificationCode { get; set; } = default!;

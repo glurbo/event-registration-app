@@ -1,5 +1,6 @@
 using DAL;
 using Domain;
+using DTO.Public.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -10,6 +11,8 @@ namespace webapi.Controllers
     public class RegistrationController : ControllerBase
     {
         private readonly EventRegistrationDbContext _context;
+        private readonly RegistrationMapper _mapper = new RegistrationMapper();
+
         
         public RegistrationController(EventRegistrationDbContext context)
         {
@@ -17,54 +20,46 @@ namespace webapi.Controllers
         }
 
         [HttpGet]   
-        public async Task<ActionResult<IEnumerable<Registration>>> GetRegistrations()
+        public async Task<ActionResult<IEnumerable<DTO.Public.Registration>>> GetRegistrations()
         {
-            return await _context.Registrations.ToListAsync();
+            var registrations = await _context.Registrations.ToListAsync();
+            var res = registrations.Select(x => _mapper.Map(x)).ToList();
+            return res;
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Registration>> GetRegistration(Guid id)
+        public async Task<ActionResult<DTO.Public.Registration>> GetRegistration(Guid id)
         {
-            var registration = _context.Registrations.FirstOrDefault(reg => reg.Id == id);
+            var registration = await _context.Registrations.FirstOrDefaultAsync(reg => reg.Id == id);
             if (registration == null)
             {
                 return NoContent();
             }
-
-            return Ok(registration);
+            
+            var res = _mapper.Map(registration);
+            return Ok(res);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRegistration(Guid id, Registration reg)
+        public async Task<IActionResult> PutRegistration(Guid id, DTO.Public.Registration reg)
         {
             if (id != reg.Id)
             {
                 return BadRequest();
             }
 
-            _context.Entry(reg).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                var registrationExists = _context.Registrations.Any(e => e.Id == id);
-                if (!registrationExists)
-                {
-                    return NotFound();
-                }
-                throw;
-            }
+            var res = _mapper.Map(reg);
+            _context.Registrations.Update(res);
+            await _context.SaveChangesAsync();
             
             return NoContent();
         }
 
         [HttpPost]
-        public async Task<ActionResult<Registration>> PostRegistration(Registration reg)
+        public async Task<ActionResult<DTO.Public.Registration>> PostRegistration(DTO.Public.Registration reg)
         {
-            _context.Registrations.Add(reg);
+            var res = _mapper.Map(reg);
+            _context.Registrations.Add(res);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetRegistration", new { id = reg.Id }, reg);
