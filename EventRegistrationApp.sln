@@ -10,7 +10,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution items", "{487E6E3B-C016-4536-89D2-6FAA7F0D77CE}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
+		README.md = README.md
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Domain", "Domain\Domain.csproj", "{02DF596D-D125-47F4-9031-9E42B39C157A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{ED28116B-A8F5-4EE8-A0BC-C542B949C5CA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +33,14 @@ Global
 		{3E178865-AB25-40AC-AC95-020FB5A28173}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E178865-AB25-40AC-AC95-020FB5A28173}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E178865-AB25-40AC-AC95-020FB5A28173}.Release|Any CPU.Build.0 = Release|Any CPU
+		{02DF596D-D125-47F4-9031-9E42B39C157A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{02DF596D-D125-47F4-9031-9E42B39C157A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{02DF596D-D125-47F4-9031-9E42B39C157A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{02DF596D-D125-47F4-9031-9E42B39C157A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ED28116B-A8F5-4EE8-A0BC-C542B949C5CA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ED28116B-A8F5-4EE8-A0BC-C542B949C5CA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ED28116B-A8F5-4EE8-A0BC-C542B949C5CA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ED28116B-A8F5-4EE8-A0BC-C542B949C5CA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
