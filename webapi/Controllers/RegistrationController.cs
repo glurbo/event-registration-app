@@ -1,6 +1,7 @@
 using DAL;
 using Domain;
 using DTO.Public.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -40,6 +41,7 @@ namespace webapi.Controllers
             return Ok(res);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutRegistration(Guid id, DTO.Public.Registration reg)
         {
@@ -66,6 +68,7 @@ namespace webapi.Controllers
 
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteRegistration(Guid id)
         {

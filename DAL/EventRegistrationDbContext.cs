@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DAL;
 
-public class EventRegistrationDbContext : IdentityDbContext
+public class EventRegistrationDbContext : IdentityDbContext<AppUser, AppRole, Guid>
 {
     public DbSet<Event> Events { get; set; } = default!;
     public DbSet<Registration> Registrations { get; set; } = default!;

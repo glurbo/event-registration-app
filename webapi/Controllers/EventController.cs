@@ -1,6 +1,6 @@
 using DAL;
-using Domain;
 using DTO.Public.Mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -11,7 +11,7 @@ namespace webapi.Controllers
     public class EventController : ControllerBase
     {
         private readonly EventRegistrationDbContext _context;
-        private readonly EventMapper _mapper = new EventMapper(new RegistrationMapper());
+        private readonly EventMapper _mapper = new EventMapper();
         
         public EventController(EventRegistrationDbContext context)
         {
@@ -41,6 +41,7 @@ namespace webapi.Controllers
             return Ok(res);
         }
 
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEvent(Guid id, DTO.Public.Event evt)
         {
@@ -56,6 +57,7 @@ namespace webapi.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult<DTO.Public.Event>> PostEvent(DTO.Public.Event evt)
         {
@@ -66,6 +68,7 @@ namespace webapi.Controllers
             return CreatedAtAction("GetEvent", new { id = evt.Id }, evt);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {

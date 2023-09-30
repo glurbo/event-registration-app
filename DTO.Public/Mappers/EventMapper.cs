@@ -2,12 +2,7 @@ namespace DTO.Public.Mappers;
 
 public class EventMapper : IMapper<Domain.Event, Public.Event>
 {
-    private readonly RegistrationMapper _registrationMapper;
-
-    public EventMapper(RegistrationMapper registrationMapper)
-    {
-        _registrationMapper = registrationMapper;
-    }
+    private readonly RegistrationMapper _registrationMapper = new RegistrationMapper();
 
     public Event Map(Domain.Event entity)
     {
