@@ -1,3 +1,4 @@
+using DAL;
 using Domain;
 using Microsoft.AspNetCore.Identity;
 
@@ -20,4 +21,17 @@ public static class DataInit
             throw new ApplicationException($"Cannot seed users, {result}");
         }
     }
+
+    public static void SeedData(EventRegistrationDbContext context)
+    {
+        context.Events.AddRangeAsync(Events);
+        context.SaveChangesAsync();
+    }
+
+    private static readonly Event[] Events =
+    {
+        new Event { Id = Guid.NewGuid(), Name = "Fun event", MaxParticipants = 30, Date = new DateTime(2023, 12, 12) },
+        new Event { Id = Guid.NewGuid(), Name = "Fun event 2", MaxParticipants = 10, Date = new DateTime(2023, 9, 5) },
+        new Event { Id = Guid.NewGuid(), Name = "Fun event 3", MaxParticipants = 50, Date = new DateTime(2023, 10, 10) }
+    };
 }

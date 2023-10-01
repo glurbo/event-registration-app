@@ -39,6 +39,16 @@ builder.Services
         };
     });
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("CorsAllowAll", policy =>
+    {
+        policy.AllowAnyHeader();
+        policy.AllowAnyMethod();
+        policy.AllowAnyOrigin();
+    });
+});
+
 builder.Services.AddAuthorization();
 
 builder.Services.AddControllers();
@@ -83,6 +93,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors("CorsAllowAll");
 
 app.UseAuthentication();
 app.UseAuthorization();
@@ -145,7 +157,7 @@ static void SetupAppData(IApplicationBuilder app, IConfiguration configuration)
     if (configuration.GetValue<bool>("DataInit:SeedData"))
     {
         logger.LogInformation("Seeding data");
-        context.SaveChangesAsync();
+        DataInit.SeedData(context);
     }
 
 }
