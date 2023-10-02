@@ -1,9 +1,9 @@
 export interface EventData {
-	id: string,
-	name: string, 
-	date: Date,
-	maxParticipants: number,
-	registrations: Registration[]
+	Id: string,
+	Name: string, 
+	Date: Date,
+	MaxParticipants: number,
+	Registrations: Registration[]
 }
 
 export interface Registration {
@@ -16,5 +16,6 @@ export interface Registration {
 export enum EDialogType {
 	AddEvent,
 	UpdateEvent,
-	DeleteEvent
+	DeleteEvent,
+	Registration
 }

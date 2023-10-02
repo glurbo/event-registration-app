@@ -58,13 +58,14 @@ namespace webapi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<DTO.Public.Registration>> PostRegistration(DTO.Public.Registration reg)
+        public async Task<ActionResult<DTO.Public.Registration>> PostRegistration(string eventId, DTO.Public.Registration registration)
         {
-            var res = _mapper.Map(reg);
+            var res = _mapper.Map(registration);
+            res.EventId = Guid.Parse(eventId);
             _context.Registrations.Add(res);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRegistration", new { id = reg.Id }, reg);
+            return CreatedAtAction("GetRegistration", new { id = registration.Id }, registration);
 
         }
 

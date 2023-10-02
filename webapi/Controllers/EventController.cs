@@ -41,11 +41,11 @@ namespace webapi.Controllers
             return Ok(res);
         }
 
-        [Authorize]
+        // [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutEvent(Guid id, DTO.Public.Event evt)
+        public async Task<IActionResult> PutEvent(string id, DTO.Public.Event evt)
         {
-            if (id != evt.Id)
+            if (Guid.Parse(id) != evt.Id)
             {
                 return BadRequest();
             }
@@ -57,22 +57,22 @@ namespace webapi.Controllers
             return NoContent();
         }
 
-        [Authorize]
+        // [Authorize]
         [HttpPost]
-        public async Task<ActionResult<DTO.Public.Event>> PostEvent(DTO.Public.Event evt)
+        public async Task<ActionResult<DTO.Public.Event>> PostEvent(DTO.Public.Event eventData)
         {
-            var res = _mapper.Map(evt);
+            var res = _mapper.Map(eventData);
             _context.Events.Add(res);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetEvent", new { id = evt.Id }, evt);
+            return CreatedAtAction("GetEvent", new { id = eventData.Id }, eventData);
         }
 
-        [Authorize]
+        // [Authorize]
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteEvent(Guid id)
+        public async Task<IActionResult> DeleteEvent(string id)
         {
-            var evt = await _context.Events.FirstOrDefaultAsync(evt => evt.Id == id);
+            var evt = await _context.Events.FirstOrDefaultAsync(evt => evt.Id == Guid.Parse(id));
 
             if (evt == null)
             {
