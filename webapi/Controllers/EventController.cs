@@ -45,7 +45,7 @@ namespace webapi.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEvent(string id, DTO.Public.Event evt)
         {
-            if (Guid.Parse(id) != evt.Id)
+            if (id != evt.Id)
             {
                 return BadRequest();
             }
@@ -59,13 +59,21 @@ namespace webapi.Controllers
 
         // [Authorize]
         [HttpPost]
-        public async Task<ActionResult<DTO.Public.Event>> PostEvent(DTO.Public.Event eventData)
+        public async Task<ActionResult<DTO.Public.Event>> PostEvent(DTO.Public.EventFormData eventData)
         {
-            var res = _mapper.Map(eventData);
-            _context.Events.Add(res);
+            var result = new Domain.Event()
+            {
+                Name = eventData.Name,
+                Date = eventData.Date,
+                MaxParticipants = eventData.MaxParticipants
+            };
+            
+            _context.Events.Add(result);
             await _context.SaveChangesAsync();
+            
+            var returnVal = _mapper.Map(result);
 
-            return CreatedAtAction("GetEvent", new { id = eventData.Id }, eventData);
+            return CreatedAtAction("GetEvent", new { id = returnVal.Id }, returnVal);
         }
 
         // [Authorize]

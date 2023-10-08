@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace webapi.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class RegistrationController : ControllerBase
     {
         private readonly EventRegistrationDbContext _context;
@@ -21,13 +21,13 @@ namespace webapi.Controllers
         }
 
         [HttpGet]   
-        public async Task<ActionResult<IEnumerable<DTO.Public.Registration>>> GetRegistrations()
+        public async Task<ActionResult<IEnumerable<DTO.Public.Registration>>> GetRegistrations(string eventId)
         {
-            var registrations = await _context.Registrations.ToListAsync();
+            var registrations = await _context.Registrations.Where(x => x.EventId.ToString() == eventId).ToListAsync();
             var res = registrations.Select(x => _mapper.Map(x)).ToList();
             return res;
         }
-
+        
         [HttpGet("{id}")]
         public async Task<ActionResult<DTO.Public.Registration>> GetRegistration(Guid id)
         {
@@ -43,9 +43,9 @@ namespace webapi.Controllers
 
         [Authorize]
         [HttpPut("{id}")]
-        public async Task<IActionResult> PutRegistration(Guid id, DTO.Public.Registration reg)
+        public async Task<IActionResult> PutRegistration(string id, DTO.Public.Registration reg)
         {
-            if (id != reg.Id)
+            if (Guid.Parse(id) != reg.Id)
             {
                 return BadRequest();
             }
@@ -58,14 +58,21 @@ namespace webapi.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<DTO.Public.Registration>> PostRegistration(string eventId, DTO.Public.Registration registration)
+        public async Task<ActionResult<DTO.Public.Registration>> PostRegistration(string eventId, [FromBody] DTO.Public.RegisterData registration)
         {
-            var res = _mapper.Map(registration);
-            res.EventId = Guid.Parse(eventId);
-            _context.Registrations.Add(res);
+            var result = new Domain.Registration()
+            {
+                EventId = Guid.Parse(eventId),
+                FirstName = registration.FirstName,
+                LastName = registration.LastName,
+                IdentificationCode = registration.IdentificationCode
+            };
+            _context.Registrations.Add(result);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetRegistration", new { id = registration.Id }, registration);
+            var returnVal = _mapper.Map(result);
+
+            return CreatedAtAction("GetRegistration", new { id = returnVal.Id }, returnVal);
 
         }
 

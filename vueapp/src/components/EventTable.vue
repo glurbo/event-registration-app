@@ -2,8 +2,8 @@
   <table class="table table-striped">
     <thead>
       <tr>
-        <th>Event Id</th>
         <th>Event Name</th>
+		<th>Event Date</th>
         <th>Participants</th>
         <th>Options</th>
       </tr>
@@ -13,11 +13,17 @@
         <td>No events found.</td>
       </tr>
       <tr v-else v-for="event in events" :key="event.Id">
-        <td>{{event.id}}</td>
-        <td>{{event.name}}</td>
-        <td>{{event.registrations.length}} / {{event.maxParticipants}}</td>
+        <td>{{event.Name}}</td>
+		<td>{{getEventDate(event)}}</td>
+        <td>{{event.Registrations.length}} / {{event.MaxParticipants}}
+          <button v-if="eventHasRegistrations(event)" type="button" class="btn btn-light mr-1" @click="showRegistrationsDialog(event)" data-bs-toggle="modal" data-bs-target="#modalDialog">
+			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-fill" viewBox="0 0 16 16">
+              <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+            </svg>
+          </button>
+		</td>
         <td>
-          <button type="button" class="btn btn-light mr-1" @click="registrationDialog(event)" data-bs-toggle="modal" data-bs-target="#modalDialog">
+          <button v-if="canRegisterToEvent(event)" type="button" class="btn btn-light mr-1" @click="registrationDialog(event)" data-bs-toggle="modal" data-bs-target="#modalDialog">
 			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
               <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
               <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
@@ -41,22 +47,38 @@
 </template>
 
 <script lang="ts">
-import { EventData } from './EventModels';
+import { EventModel } from './EventModels';
 import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
     props: {
-        events: Array as () => PropType<EventData[]>
+        events: Array as PropType<EventModel[]>
     },
     methods: {
-        editEventDialog(event: EventData) {
+        editEventDialog(event: EventModel) {
             this.$emit("editEventDialog", event);
         },
-        deleteEventDialog(event: EventData) {
+        deleteEventDialog(event: EventModel) {
             this.$emit("deleteEventDialog", event);
         },
-		registrationDialog(event: EventData) {
+		registrationDialog(event: EventModel) {
 			this.$emit("registrationDialog", event);
+		},
+		showRegistrationsDialog(event: EventModel) {
+			this.$emit("showRegistrationsDialog", event);
+		},
+		canRegisterToEvent(event: EventModel): boolean {
+			return event.Registrations.length < event.MaxParticipants;
+		},
+		eventHasRegistrations(event: EventModel): boolean {
+            return event.Registrations.length >= 1;
+		},
+		getEventDate(event: EventModel) {
+			let date = new Date(event.Date);
+			if (isNaN(date.getTime())) {
+				return ""; // Invalid date
+			}
+			return date.toLocaleString("et-EE", { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 		}
     },
 })

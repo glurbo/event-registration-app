@@ -6,7 +6,6 @@ public class RegistrationMapper : IMapper<Domain.Registration, Public.Registrati
     {
         var res = new Public.Registration()
         {
-            Id = entity.Id,
             FirstName = entity.FirstName,
             LastName = entity.LastName,
             IdentificationCode = entity.IdentificationCode
@@ -18,7 +17,6 @@ public class RegistrationMapper : IMapper<Domain.Registration, Public.Registrati
     {
         var res = new Domain.Registration()
         {
-            Id = entity.Id,
             FirstName = entity.FirstName,
             LastName = entity.LastName,
             IdentificationCode = entity.IdentificationCode

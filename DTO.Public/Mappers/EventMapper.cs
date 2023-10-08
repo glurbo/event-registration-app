@@ -9,7 +9,7 @@ public class EventMapper : IMapper<Domain.Event, Public.Event>
         var registrations = entity.Registrations?.Select(x => _registrationMapper.Map(x)!).ToList();
         var res = new Public.Event()
         {
-            Id = entity.Id,
+            Id = entity.Id.ToString(),
             Date = entity.Date,
             MaxParticipants = entity.MaxParticipants,
             Name = entity.Name,
@@ -23,7 +23,7 @@ public class EventMapper : IMapper<Domain.Event, Public.Event>
         var registrations = entity.Registrations?.Select(x => _registrationMapper.Map(x)!).ToList();
         var res = new Domain.Event()
         {
-            Id = entity.Id,
+            Id = Guid.Parse(entity.Id),
             Date = entity.Date,
             MaxParticipants = entity.MaxParticipants,
             Name = entity.Name,

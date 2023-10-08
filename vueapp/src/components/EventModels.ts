@@ -1,5 +1,5 @@
-export interface EventData {
-	Id: string,
+export interface EventModel {
+	Id: string | null,
 	Name: string, 
 	Date: Date,
 	MaxParticipants: number,
@@ -13,9 +13,22 @@ export interface Registration {
 	IdentificationCode: string
 }
 
+export interface EventFormModel {
+	Name: string, 
+	Date: Date,
+	MaxParticipants: number,
+}
+
+export interface RegisterFormModel {
+	FirstName: string,
+	LastName: string,
+	IdentificationCode: string
+}
+
 export enum EDialogType {
 	AddEvent,
 	UpdateEvent,
 	DeleteEvent,
-	Registration
+	Registration,
+	ShowRegistrations
 }

@@ -2,8 +2,8 @@
 
 public class Event
 {
-    public Guid Id { get; set; }
-    public string Name { get; set; } = default!;
+    public string Id { get; set; }
+    public string Name { get; set; }
     public DateTime Date { get; set; }
     public int MaxParticipants { get; set; }
 

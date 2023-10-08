@@ -1,5 +1,5 @@
 <template lang="">
-	<div class="modal fade" id="modalDialog" tabindex="-1" role="dialog" aria-labelledby="modalDialogLabel" aria-hidden="true">
+	<div class="modal" id="modalDialog" tabindex="-1" role="dialog" data-bs-backdrop="static" aria-labelledby="modalDialogLabel" aria-hidden="true">
 		<div class="modal-dialog" role="document">
 			<div class="modal-content">
 			<div class="modal-header">
@@ -18,16 +18,28 @@
 						<label for="eventDate">Event date</label>
 						<input v-model="editableEvent.Date" type="datetime-local" class="form-control" id="eventDate">
 					</div>
-					<div class="form-outline">
+					<div v-if="isAddDialog" class="form-outline">
 						<label for="eventCount">Max participants</label>
 						<input v-model="editableEvent.MaxParticipants" type="number" class="form-control" id="eventCount">
 					</div>
 				</div>
 				<div v-if="isDeleteDialog">
-					<tr>{{eventId}}</tr>
-					<tr>{{eventName}}</tr>
-					<tr>{{eventDate}}</tr>
-					<tr>{{eventParticipationCount}}</tr>
+					<table class="table table-striped">
+                    <tbody>
+                        <tr>
+                            <th>Event name:</th>
+                            <th>{{eventName}}</th>
+                        </tr>
+                        <tr>
+                            <th>Date:</th>
+                            <th>{{eventDate}}</th>
+                        </tr>
+                        <tr>
+                            <th>Participants:</th>
+                            <th>{{eventParticipationCount}}</th>
+                        </tr>
+					</tbody>
+					</table>
 				</div>
 				<div v-if="isRegistrationDialog">
 					<div class="form-group">
@@ -43,41 +55,54 @@
 						<input v-model="registrationData.IdentificationCode" type="text" class="form-control" id="idCode">
 					</div>
 				</div>
-				
+				<div v-if="isShowRegistrationsDialog">
+					<table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>First name</th>
+                                <th>Last name</th>
+                                <th>Identification code</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="registration in event.Registrations" :key="registration.IdentificationCode">
+                                <td>{{registration.FirstName}}</td>
+                                <td>{{registration.LastName}}</td>
+                                <td>{{registration.IdentificationCode}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="$emit('cancelClicked')">Close</button>
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="onClickConfirm()">{{confirmButtonText}}</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="cancelClicked()">Close</button>
+				<button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="onClickConfirm()" v-if="!isShowRegistrationsDialog">{{confirmButtonText}}</button>
 			</div>
 			</div>
 		</div>
 	</div>
 </template>
 <script lang="ts">
-import { EDialogType, EventData, Registration } from './EventModels'
-import { PropType, defineComponent } from 'vue';
+import { EDialogType, EventModel, RegisterFormModel } from './EventModels'
+import { defineComponent } from 'vue';
 
 export default defineComponent({
-	props: {
-		event: Object as PropType<EventData>,
-		dialogType: EDialogType
-	},
+	props: ['event', 'dialogType'],
 	data() {
 		return {
 			dialogTitle: "",
 			editableEvent: {
 				Id: null,
-				Name: null,
-				Date: null,
-				MaxParticipants: null,
+				Name: "",
+				Date: new Date(),
+				MaxParticipants: 0,
 				Registrations: []
-			} as EventData,
+			} as EventModel,
 			registrationData: {
-				Id: null,
 				FirstName: "",
 				LastName: "",
 				IdentificationCode: ""
-			} as Registration,
+			} as RegisterFormModel,
 		};
 	},
 	computed: {
@@ -93,6 +118,9 @@ export default defineComponent({
 		isDeleteDialog(): boolean {
 			return this.dialogType === EDialogType.DeleteEvent;
 		},
+		isShowRegistrationsDialog(): boolean {
+            return this.dialogType === EDialogType.ShowRegistrations;
+		},
 		eventId(): string {
 			return this.event != null ? this.event.Id : "";
 		},
@@ -100,11 +128,14 @@ export default defineComponent({
 			return this.event != null ? this.event.Name : "";
 		},
 		eventDate(): string {
-			if (this.event == null) return "";
+			if (this.event == null || !this.event.Date) return "";
 			let date = new Date(this.event.Date);
-			return date.toISOString().substr(0, 16).replace('T', ' ');
+			if (isNaN(date.getTime())) {
+				return ""; // Invalid date
+			}
+			return date.toLocaleString("et-EE", { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 		},
-		eventParticipationCount(): number {
+		eventParticipationCount(): string {
 			return this.event != null ? `${this.event.Registrations.length} / ${this.event.MaxParticipants}` : "";
 		},
 		confirmButtonText(): string {
@@ -128,7 +159,11 @@ export default defineComponent({
 				case EDialogType.UpdateEvent:
 					return "Edit event";
 				case EDialogType.DeleteEvent:
-					return "Delete event";
+					return "Delete event?";
+				case EDialogType.Registration:
+					return "Register";
+				case EDialogType.ShowRegistrations:
+					return `Registrations for ${this.event.Name}`
 				default:
 					return "";
 			}
@@ -152,19 +187,35 @@ export default defineComponent({
 				default:
 					break;
 			}
+			this.resetData();
+		},
+		cancelClicked() {
+			this.$emit('cancelClicked');
+			this.resetData();
+		},
+		resetData() {
+			this.editableEvent = {
+				Id: null,
+				Name: "",
+				Date: new Date(),
+				MaxParticipants: 0,
+				Registrations: []
+			} as EventModel;
+			this.registrationData = {
+				FirstName: "",
+				LastName: "",
+				IdentificationCode: ""
+			} as RegisterFormModel;
 		}
 	},
 	watch: {
-		event(newEvent: EventData, oldEvent: EventData) {
-			if (this.dialogType == EDialogType.UpdateEvent && oldEvent === null) {
-				this.editableEvent = newEvent;
-			} else {
-				this.editableEvent.Id = null;
-				this.editableEvent.Name = "";
-				this.editableEvent.Date = null;
-                this.editableEvent.MaxParticipants = null;
-				this.editableEvent.Registrations = [];
-			}
+		event: {
+			handler(newValue) {
+				if (this.dialogType === EDialogType.UpdateEvent) {
+                    this.editableEvent = structuredClone(newValue);
+				}
+			},
+			deep: true
 		}
 	}
 });
