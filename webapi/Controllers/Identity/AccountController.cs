@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Text;
 using DAL;
 using Domain;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -64,17 +65,16 @@ public class AccountController : ControllerBase
         var claimsPrincipal = await _signInManager.CreateUserPrincipalAsync(appUser);
         
         // generate jwt
-        var jwt = GenerateJwt(
+        var jwt = IdentityHelpers.GenerateJwt(
             claimsPrincipal.Claims,
             _configuration["JWT:Key"]!,
             _configuration["JWT:Issuer"]!,
-            _configuration["JWT:Audience"]!,
-            _configuration.GetValue<int>("JWT:ExpiresInSeconds")
+            _configuration["JWT:Audience"]!
         );
         return Ok(jwt);
     }
 
-    [Authorize]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [HttpPost]
     public async Task<ActionResult> Logout()
     {
@@ -82,12 +82,22 @@ public class AccountController : ControllerBase
         return Ok();
     }
 
-    public static string GenerateJwt(IEnumerable<Claim> claims, string key, string issuer, string audience,
-        int expiresInDays)
+    
+}
+
+public static class IdentityHelpers
+{
+    public static Guid GetUserId(this ClaimsPrincipal user)
+    {
+        return Guid.Parse(
+            user.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value);
+    }
+    
+    public static string GenerateJwt(IEnumerable<Claim> claims, string key, string issuer, string audience)
     {
         var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
         var signingCredentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
-        var expires = DateTime.Now.AddSeconds(expiresInDays);
+        var expires = DateTime.Now.AddSeconds(50000);
         var token = new JwtSecurityToken(
             issuer: issuer,
             audience: audience,
@@ -97,6 +107,8 @@ public class AccountController : ControllerBase
         return new JwtSecurityTokenHandler().WriteToken(token);
     }
 }
+
+
 
 public class Login
 {

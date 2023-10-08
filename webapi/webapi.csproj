@@ -30,6 +30,9 @@
   <ItemGroup>
     <ProjectReference Include="..\DAL\DAL.csproj" />
     <ProjectReference Include="..\DTO.Public\DTO.Public.csproj" />
+    <ProjectReference Include="..\vueapp\vueapp.esproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>   
   </ItemGroup>
 
 </Project>

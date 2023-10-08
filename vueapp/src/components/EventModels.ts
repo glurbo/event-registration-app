@@ -25,6 +25,11 @@ export interface RegisterFormModel {
 	IdentificationCode: string
 }
 
+export interface LoginModel {
+	Email: string,
+	Password: string
+}
+
 export enum EDialogType {
 	AddEvent,
 	UpdateEvent,

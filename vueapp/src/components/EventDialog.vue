@@ -12,7 +12,7 @@
 				<div v-if="isAddDialog || isUpdateDialog">
 					<div class="form-group">
 						<label for="eventName">Event name</label>
-						<input v-model="editableEvent.Name" type="text" class="form-control" id="eventName" placeholder="Enter name">
+						<input v-model="editableEvent.Name" type="text" class="form-control" id="eventName" placeholder="Enter name" >
 					</div>
 					<div class="form-group">
 						<label for="eventDate">Event date</label>
@@ -20,7 +20,7 @@
 					</div>
 					<div v-if="isAddDialog" class="form-outline">
 						<label for="eventCount">Max participants</label>
-						<input v-model="editableEvent.MaxParticipants" type="number" class="form-control" id="eventCount">
+						<input v-model="editableEvent.MaxParticipants" type="number" class="form-control" id="eventCount" min="5" max="5000">
 					</div>
 				</div>
 				<div v-if="isDeleteDialog">

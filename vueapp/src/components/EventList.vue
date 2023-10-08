@@ -1,8 +1,16 @@
 <template>
+  <nav class="navbar navbar-light bg-light justify-content-between">
+    <a class="navbar-brand m-2">{{ isAuthenticated() ? `Logged in as: ${getUsername()}` : "" }}</a>
+	<button v-if="isAuthenticated()" class="btn btn-outline-success m-2" type="button" @click="onLogoutClick">Log out</button>
+	<button v-else class="btn btn-outline-success m-2" type="button" data-bs-toggle="modal" data-bs-target="#loginDialog">Log in</button>
+  </nav>
+  <login-dialog @confirm-clicked="onLoginClick">
+
+  </login-dialog>
   <div class="container">
     <h2>Events</h2>
 	<div v-if="!loading">
-		<button type="button"
+		<button v-if="isAuthenticated()" type="button"
             class="btn btn-primary m-2 fload-end"
             @click="addEventDialog" data-bs-toggle="modal" data-bs-target="#modalDialog">
             Add Event
@@ -30,13 +38,14 @@
 
 <script lang="ts">
 import {defineComponent} from 'vue'
-import { fetchEvents, createEvent, deleteEvent, updateEvent, registerToAnEvent } from '@/api';
+import { fetchEvents, createEvent, deleteEvent, updateEvent, registerToAnEvent, LogIn, LogOut } from '@/api';
 import EventDialog from './EventDialog.vue';
 import EventTable from './EventTable.vue';
-import { EDialogType, EventModel, RegisterFormModel } from './EventModels';
+import LoginDialog from './LoginDialog.vue';
+import { EDialogType, EventModel, LoginModel, RegisterFormModel } from './EventModels';
 
 export default defineComponent({
-  components: { EventDialog, EventTable },
+  components: { EventDialog, EventTable, LoginDialog },
   name: "EventList",
   data() {
     return {
@@ -51,6 +60,12 @@ export default defineComponent({
     this.fetchEvents();
   },
   methods: {
+	getUsername() {
+        return sessionStorage.getItem("username");
+	},
+	isAuthenticated() {
+		return sessionStorage.getItem("jwt") ? true : false;
+	},
     fetchEvents() {
         this.loading = true;
 		this.componentKey += 1;
@@ -103,6 +118,12 @@ export default defineComponent({
 	},
 	registerToEvent(eventId: string, registration: RegisterFormModel) {
 		registerToAnEvent(eventId, registration).then(() => this.fetchEvents());
+	},
+	onLoginClick(loginData: LoginModel) {
+		LogIn(loginData).then(() => window.location.reload());
+	},
+	onLogoutClick() {
+        LogOut().then(() => window.location.reload());
 	}
   },
 });

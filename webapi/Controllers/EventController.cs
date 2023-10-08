@@ -1,5 +1,6 @@
 using DAL;
 using DTO.Public.Mappers;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -41,7 +42,7 @@ namespace webapi.Controllers
             return Ok(res);
         }
 
-        // [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEvent(string id, DTO.Public.Event evt)
         {
@@ -57,7 +58,7 @@ namespace webapi.Controllers
             return NoContent();
         }
 
-        // [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpPost]
         public async Task<ActionResult<DTO.Public.Event>> PostEvent(DTO.Public.EventFormData eventData)
         {
@@ -76,7 +77,7 @@ namespace webapi.Controllers
             return CreatedAtAction("GetEvent", new { id = returnVal.Id }, returnVal);
         }
 
-        // [Authorize]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(string id)
         {
