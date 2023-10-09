@@ -20,7 +20,7 @@
 					</div>
 					<div v-if="isAddDialog" class="form-outline">
 						<label for="eventCount">Max participants</label>
-						<input v-model="editableEvent.MaxParticipants" type="number" class="form-control" id="eventCount" min="5" max="5000">
+						<input v-model="editableEvent.MaxParticipants" type="number" class="form-control" id="eventCount" min="1" max="5000">
 					</div>
 				</div>
 				<div v-if="isDeleteDialog">
@@ -76,7 +76,7 @@
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="cancelClicked()">Close</button>
-				<button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="onClickConfirm()" v-if="!isShowRegistrationsDialog">{{confirmButtonText}}</button>
+				<button type="button" class="btn btn-primary" data-bs-dismiss="modal" @click="onClickConfirm()" v-if="!isShowRegistrationsDialog" :disabled="!formIsValid">{{confirmButtonText}}</button>
 			</div>
 			</div>
 		</div>
@@ -166,6 +166,17 @@ export default defineComponent({
 					return `Registrations for ${this.event.Name}`
 				default:
 					return "";
+			}
+		},
+		formIsValid(): boolean {
+			switch (this.dialogType) {
+                case EDialogType.AddEvent:
+				case EDialogType.UpdateEvent:
+					return this.editableEvent.Name.length !== 0 && this.editableEvent.Date !== null && this.editableEvent.MaxParticipants > 0;
+				case EDialogType.Registration:
+					return this.registrationData.FirstName.length !== 0 && this.registrationData.LastName.length !== 0 && this.registrationData.IdentificationCode.length !== 0;
+				default:
+					return true;
 			}
 		}
 	},
