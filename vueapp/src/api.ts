@@ -24,10 +24,16 @@ export const createEvent = async (eventData: EventModel) => await apiClient.post
 export const deleteEvent = async (eventId: string) => await apiClient.delete(`Event/${eventId}`, getHeaders());
 export const updateEvent = async (eventId: string, event: EventModel) => await apiClient.put(`Event/${eventId}`, event, getHeaders());
 
-export const LogIn = async (loginData: LoginModel) => await apiClient.post('identity/Account/Login', loginData, getHeaders()).then(response => {
-	sessionStorage.setItem("jwt", response.data);
-	sessionStorage.setItem("username", loginData.Email);
-});
+export const LogIn = async (loginData: LoginModel) => {
+    try {
+        await apiClient.post('identity/Account/Login', loginData, getHeaders()).then(response => {
+        sessionStorage.setItem("jwt", response.data);
+        sessionStorage.setItem("username", loginData.Email)});
+	} catch (err) {
+        alert("wrong email/password!")
+	}
+    
+};
 export const LogOut = async () => await apiClient.post('identity/Account/Logout', null, getHeaders()).then(() => {
 	sessionStorage.removeItem("jwt"); 
 	sessionStorage.removeItem("username");
