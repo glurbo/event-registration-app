@@ -1,6 +1,8 @@
 using DAL;
 using Domain;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using NuGet.Packaging;
 
 namespace webapi.Helpers;
 
@@ -30,8 +32,8 @@ public static class DataInit
 
     private static readonly Event[] Events =
     {
-        new Event { Id = Guid.NewGuid(), Name = "Fun event", MaxParticipants = 30, Date = new DateTime(2023, 12, 12) },
-        new Event { Id = Guid.NewGuid(), Name = "Fun event 2", MaxParticipants = 10, Date = new DateTime(2023, 9, 5) },
-        new Event { Id = Guid.NewGuid(), Name = "Fun event 3", MaxParticipants = 50, Date = new DateTime(2023, 10, 10) }
+        new Event { Id = Guid.NewGuid(), Name = "Maie sünnipäevapidu", MaxParticipants = 50, Date = new DateTime(2023, 12, 12, 16, 0, 0) },
+        new Event { Id = Guid.NewGuid(), Name = "Linuxi koolitus", MaxParticipants = 30, Date = new DateTime(2023, 10, 23, 12, 0, 0) },
+        new Event { Id = Guid.NewGuid(), Name = "Viljandi jaanituli", MaxParticipants = 3000, Date = new DateTime(2023, 5, 23, 20, 0, 0) }
     };
 }
