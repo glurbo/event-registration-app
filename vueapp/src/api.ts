@@ -2,7 +2,7 @@ import axios from 'axios';
 import { EventModel, RegisterFormModel, LoginModel } from './components/EventModels';
 
 const apiClient = axios.create({
-    baseURL: 'https://localhost:44391/api/',
+    baseURL: 'http://localhost:8000/api/',
 	headers: {
 		'Content-Type': 'application/json',
 	}
