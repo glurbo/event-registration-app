@@ -16,19 +16,21 @@ npm run serve
 # build for production
 npm run build
 ```
+updating node/npm helps if having issues.
 
 ## Start ASP.NET Core project
 ```bash
 # root folder
 cd webapi
 
-# serve at localhost:8001
+# serve at localhost:8001 (https)
 dotnet run --launch-profile https
 
 #or
 
-# serve at localhost:8000
+# serve at localhost:8000 (http)
 dotnet run
+# if running on port 8001 doesn't work, try this and edit baseUrl in vueapp/src/api.ts
 ```
 
 update dotnet tools
@@ -60,4 +62,4 @@ Some issues I had with the trial work:
 * axios had problems sending data to backend because of casing issues (camelCase to PascalCase), solved it by changing json serializer options in the backend to make models consistently have PascalCase names.
 * Troubles with authentication implementation on the frontend. Little experience with authentication solutions on the frontend certainly added some hours to it. Settled with session storage, but certainly not the best solution. Implementing authentication without any third party solutions can be tricky.
 * Issues with getting authorization with JWT tokens to work. Solution was to specify the authentication scheme in the authorize attribute on api controllers.
-
+* Using bootstrap modals for dialog hindered progress for a bit, made it harder to do validation since submitting closes the dialog.
